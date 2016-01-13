@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+  </head>
+  <body>
+
+    <app>Loading</app>
+
+    <script>
+      'use strict';
+      require('babel-register')({
+        "plugins":[
+          "angular2-annotations",
+    			"transform-decorators-legacy",
+    			"transform-class-properties",
+        	"transform-flow-strip-types",
+          "transform-async-to-generator"
+        ],
+        "presets":[
+          "es2015",
+          "stage-0"
+        ]
+      });
+      require('babel-polyfill');
+      require('./app/main');
+    </script>
+  </body>
+</html>

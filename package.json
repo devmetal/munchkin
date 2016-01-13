@@ -1,0 +1,48 @@
+{
+  "name": "electron-quick-start",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atom/electron-quick-start.git"
+  },
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/atom/electron-quick-start/issues"
+  },
+  "homepage": "https://github.com/atom/electron-quick-start#readme",
+  "devDependencies": {
+    "electron-prebuilt": "^0.36.0",
+    "gulp": "^3.9.0",
+    "gulp-spawn": "^0.3.0",
+    "gulp-util": "^3.0.7"
+  },
+  "dependencies": {
+    "angular2": "^2.0.0-beta.0",
+    "babel-plugin-angular2-annotations": "^5.0.0",
+    "babel-plugin-transform-async-to-generator": "^6.4.0",
+    "babel-plugin-transform-class-properties": "^6.4.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-flow-strip-types": "^6.4.0",
+    "babel-polyfill": "^6.3.14",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
+    "babel-register": "^6.3.13",
+    "pouchdb": "^5.1.0",
+    "reflect-metadata": "^0.1.3",
+    "rxjs": "^5.0.0-beta.0",
+    "systemjs": "^0.19.13",
+    "zone.js": "^0.5.10"
+  }
+}
