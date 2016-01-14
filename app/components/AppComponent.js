@@ -1,19 +1,13 @@
 'use strict';
 
 import {
-  Component
+  Component,
+  NgZone
 } from 'angular2/core';
 
 import {
-  remote
-} from 'electron';
-
-import {
-  Observable
-} from 'rxjs';
-
-const Menu = remote.Menu;
-const MenuItem = remote.MenuItem;
+  MenuService
+} from '../services/Menu.srv';
 
 @Component({
   selector: 'app',
@@ -23,92 +17,30 @@ const MenuItem = remote.MenuItem;
   `
 })
 export default class {
-  constructor() {
-    this.stranger = 'electron';
-    this.item = 'nothing';
+
+  constructor(menu: MenuService, zone: NgZone) {
+    this.menu = menu;
+    this.zone = zone;
   }
 
   ngOnInit() {
+    this.newGameSubscribtion = this.menu.newGameEmitter.subscribe(
+      (item) => this.selectedItem(item)
+    );
 
-    
-
-    var template = [
-      {
-        label: 'Game',
-        submenu: [
-          {
-            label: 'New game',
-            click: () => {
-              console.log('new game');
-              self.item = 'new game';
-              console.log(self.item);
-            }
-          },
-          {
-            type: 'separator'
-          },
-          {
-            label: 'New Player',
-            click: () => {
-              console.log('new player');
-              self.item = 'new player';
-            }
-          },
-          {
-            type: 'separator'
-          },
-          {
-            label: 'Quit',
-            accelerator: 'Command+Q',
-            selector: 'terminate:'
-          },
-        ]
-      },
-      {
-        label: 'View',
-        submenu: [
-          {
-            label: 'Reload',
-            accelerator: 'Command+R',
-            click: function() { remote.getCurrentWindow().reload(); }
-          },
-          {
-            label: 'Toggle DevTools',
-            accelerator: 'Alt+Command+I',
-            click: function() { remote.getCurrentWindow().toggleDevTools(); }
-          },
-        ]
-      },
-      {
-        label: 'Window',
-        submenu: [
-          {
-            label: 'Minimize',
-            accelerator: 'Command+M',
-            selector: 'performMiniaturize:'
-          },
-          {
-            label: 'Close',
-            accelerator: 'Command+W',
-            selector: 'performClose:'
-          },
-          {
-            type: 'separator'
-          },
-          {
-            label: 'Bring All to Front',
-            selector: 'arrangeInFront:'
-          }
-        ]
-      },
-      {
-        label: 'Help',
-        submenu: []
-      }
-    ];
-
-    let menu = Menu.buildFromTemplate(template);
-
-    Menu.setApplicationMenu(menu);
+    this.newPlayerSubscribtion = this.menu.newPlayerEmitter.subscribe(
+      (item) => this.selectedItem(item)
+    );
   }
+
+  ngOnDestroy() {
+    this.newGameSubscribtion.unsubscribe();
+    this.newPlayerSubscribtion.unsubscribe();
+  }
+
+  selectedItem(item) {
+    this.zone.run(() => this.item = item);
+  }
+
+
 }
