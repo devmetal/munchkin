@@ -9,31 +9,43 @@ import {
   MenuService
 } from '../services/Menu.srv';
 
+import {
+  MunchkinService
+} from '../services/Munchkin.srv';
+
 @Component({
   selector: 'app',
   template:`
-    <h1>Hello {{stranger}}</h1>
+    <h1>Munchkin meter</h1>
     <p>You clicked on {{item}}</p>
   `
 })
 export default class {
 
-  constructor(menu: MenuService, zone: NgZone) {
+  constructor(menu: MenuService, zone: NgZone, mdb: MunchkinService) {
     this.menu = menu;
     this.zone = zone;
+    this.mdb = mdb;
+    this.munchkins = [];
   }
 
   ngOnInit() {
+    this.munchkinsSubscribtion = mdb.munchkins.subscribe(
+      updatedMunchkins => this.updateMunchkins(updatedMunchkins),
+      err => console.log(err)
+    );
+
     this.newGameSubscribtion = this.menu.newGameEmitter.subscribe(
-      (item) => this.selectedItem(item)
+      () => this.mdb.newGame();
     );
 
     this.newPlayerSubscribtion = this.menu.newPlayerEmitter.subscribe(
-      (item) => this.selectedItem(item)
+      () => this.mdb.addMunchkin();
     );
   }
 
   ngOnDestroy() {
+    this.munchkinsSubscribtion.unsubscribe();
     this.newGameSubscribtion.unsubscribe();
     this.newPlayerSubscribtion.unsubscribe();
   }
@@ -42,5 +54,7 @@ export default class {
     this.zone.run(() => this.item = item);
   }
 
-
+  updateMunchkins(munchkins) {
+    this.zone.run(() => this.munchkins = munchkins);
+  }
 }
