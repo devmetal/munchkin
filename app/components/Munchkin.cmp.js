@@ -35,7 +35,7 @@ import {
       <div>{{label}}</div>
       <div class='up' (click)='modelUp()' #up>UP</div>
       <div>{{model}}</div>
-      <div class='down' (click)='modelDown' #down>DOWN</div>
+      <div class='down' (click)='modelDown()' #down>DOWN</div>
     </div>
   `
 })
@@ -43,12 +43,14 @@ class Stat {
   @Input()
   model;
 
+  @Input()
+  label;
+
   @Output()
   change;
 
-  constructor(@Attribute('label') label) {
+  constructor() {
     this.change = new EventEmitter();
-    this.label = label;
   }
 
   modelUp() {
@@ -61,8 +63,8 @@ class Stat {
 
   ngOnInit() {
     let changes = Observable.merge(
-      #up.click,
-      #down.click
+      this.up.click,
+      this.down.click
     ).debounce(500);
 
     changes.subscribe(
@@ -80,8 +82,8 @@ class Stat {
     <div class='munchkin'>
       <div class='name'>{{munchkin.name}}</div>
       <div class='stats'>
-        <stat [model]='munchkin.level' label='Level' (change)='munchkin.level = $event; save()'>
-        <stat [model]='munchkin.gear'  label='Gear' (change)='munchkin.gear = $event; save()'>
+        <stat [model]='munchkin.level' [label]='Level' (change)='munchkin.level = $event; save()'></stat>
+        <stat [model]='munchkin.gear'  [label]='Gear' (change)='munchkin.gear = $event; save()'></stat>
       </div>
       <label>
         Warrior
@@ -93,7 +95,7 @@ class Stat {
         <span *ngSwitchWhen='false'>Fight</span>
         <span *ngSwitchWhen='true'>End Fight</span>
       </button>
-      <button (click)='toggleHelp()'>
+      <button (click)='toggleHelp()' [ngSwitch]='isHelping'>
         <span *ngSwitchWhen='false'>Help</span>
         <span *ngSwitchWhen='true'>End Help</span>
       </button>

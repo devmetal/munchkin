@@ -17,17 +17,16 @@ import {
   MunchkinService
 } from '../services/Munchkin.srv';
 
+import {
+  MunchkinComponent
+} from './Munchkin.cmp';
+
 @Component({
   selector: 'app',
-  directives:[NgFor],
+  directives:[NgFor, MunchkinComponent],
   template:`
     <h1>Munchkin meter</h1>
-    <div *ngFor='#munchkin of munchkins'>
-      <div>Name: {{munchkin.name}}</div>
-      <div>Level: {{munchkin.level}}</div>
-      <div>Warrior: {{munchkin.isWarior}}</div>
-      <div>Gear: {{munchkin.gear}}</div>
-    </div>
+    <munchkin *ngFor='#munchkin of munchkins' [munchkin]='munchkin'></munchkin>
   `
 })
 export default class {
