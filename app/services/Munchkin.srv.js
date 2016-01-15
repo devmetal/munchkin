@@ -2,14 +2,14 @@
 
 import { Injectable } from 'angular2/core';
 import { Munchkin }   from '../models/Munchkin.model';
-import PouchDB        from 'pouchdb';
 import { Observable } from 'rxjs';
 
 @Injectable()
-export class MuchkinService {
+export class MunchkinService {
 
   constructor() {
     this.db = new PouchDB('munchkins');
+
     this.datas = {
       munchkins: []
     };
@@ -17,7 +17,7 @@ export class MuchkinService {
     this.munchkins = null;
     this.munchkinsObserver = null;
 
-    init();
+    this.init();
   }
 
   init() {
@@ -27,42 +27,67 @@ export class MuchkinService {
   }
 
   async loadGame() {
-    let items = await this.db.allDocs({
-      include_docs: true
-    });
+    try {
+      var items = await this.db.allDocs({
+        include_docs: true
+      });
+    } catch(err) {
+      console.log(err);
+    }
 
     if (!items.rows) {
       this.datas.munchkins = [];
     } else {
-      this.datas.munchkins = items.row.map(
-        row => new Munchkin(row)
+      this.datas.munchkins = items.rows.map(
+        row => new Munchkin(row.doc)
       );
     }
 
-    this.munchkinsObserver.onNext(this.datas.munchkins);
+    this.munchkinsObserver.next(this.datas.munchkins);
   }
 
   async newGame() {
-    let result = await this.db.destroy();
-    this.datas.munchkins = [];
-    this.munchkinsObserver.onNext(this.datas.munchkins);
+    try {
+      let items = await this.db.allDocs({
+        include_docs: true
+      });
+
+      if (items.total_rows) {
+        await Promise.all(items.rows.map(
+          item => this.db.remove(item.doc)
+        ));
+      }
+
+      this.datas.munchkins = [];
+      this.munchkinsObserver.next(this.datas.munchkins);
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   async addMunchkin() {
     let munchkin = new Munchkin({
       name: 'munchkin'
     });
-    
-    let result = await this.db.post(munchkin);
+
+    console.log(munchkin);
+
+    try {
+      var result = await this.db.post(munchkin);
+    } catch(err) {
+      console.log(err);
+      return this.munchkinsObserver.onError(err);
+    }
+
     if (!result.ok || result.ok === false) {
       return this.munchkinsObserver.onError('add fail');
     }
 
-    munchkin._id = resp.id;
-    munchkin._rev = resp.rev;
+    munchkin._id = result.id;
+    munchkin._rev = result.rev;
 
     this.datas.munchkins.push(munchkin);
-    this.munchkinsObserver.onNext(this.datas.munchkins);
+    this.munchkinsObserver.next(this.datas.munchkins);
   }
 
   async updateMunchkin(munchkin) {
@@ -79,6 +104,6 @@ export class MuchkinService {
       }
     });
 
-    this.munchkinsObserver.onNext(this.datas.munchkins);
+    this.munchkinsObserver.next(this.datas.munchkins);
   }
 }

@@ -6,6 +6,10 @@ import {
 } from 'angular2/core';
 
 import {
+  NgFor
+} from 'angular2/common';
+
+import {
   MenuService
 } from '../services/Menu.srv';
 
@@ -15,9 +19,15 @@ import {
 
 @Component({
   selector: 'app',
+  directives:[NgFor],
   template:`
     <h1>Munchkin meter</h1>
-    <p>You clicked on {{item}}</p>
+    <div *ngFor='#munchkin of munchkins'>
+      <div>Name: {{munchkin.name}}</div>
+      <div>Level: {{munchkin.level}}</div>
+      <div>Warrior: {{munchkin.isWarior}}</div>
+      <div>Gear: {{munchkin.gear}}</div>
+    </div>
   `
 })
 export default class {
@@ -30,18 +40,20 @@ export default class {
   }
 
   ngOnInit() {
-    this.munchkinsSubscribtion = mdb.munchkins.subscribe(
+    this.munchkinsSubscribtion = this.mdb.munchkins.subscribe(
       updatedMunchkins => this.updateMunchkins(updatedMunchkins),
-      err => console.log(err)
+      err              => console.log(err)
     );
 
     this.newGameSubscribtion = this.menu.newGameEmitter.subscribe(
-      () => this.mdb.newGame();
+      () => this.mdb.newGame()
     );
 
     this.newPlayerSubscribtion = this.menu.newPlayerEmitter.subscribe(
-      () => this.mdb.addMunchkin();
+      () => this.mdb.addMunchkin()
     );
+
+    this.mdb.loadGame();
   }
 
   ngOnDestroy() {
