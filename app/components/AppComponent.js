@@ -25,8 +25,9 @@ import {
   selector: 'app',
   directives:[NgFor, MunchkinComponent],
   template:`
-    <h1>Munchkin meter</h1>
-    <munchkin *ngFor='#munchkin of munchkins' [munchkin]='munchkin'></munchkin>
+    <div id="munchkins">
+      <munchkin *ngFor='#munchkin of munchkins' [munchkin]='munchkin'></munchkin>
+    </div>
   `
 })
 export default class {

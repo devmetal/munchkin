@@ -5,7 +5,8 @@ import {
   Input,
   Output,
   EventEmitter,
-  Attribute
+  Attribute,
+  ElementRef
 } from 'angular2/core';
 
 import {
@@ -33,9 +34,9 @@ import {
   template: `
     <div class='stat'>
       <div>{{label}}</div>
-      <div class='up' (click)='modelUp()' #up>UP</div>
+      <div class='up'>UP</div>
       <div>{{model}}</div>
-      <div class='down' (click)='modelDown()' #down>DOWN</div>
+      <div class='down'>DOWN</div>
     </div>
   `
 })
@@ -49,29 +50,27 @@ class Stat {
   @Output()
   change;
 
-  constructor() {
+  constructor(ref: ElementRef) {
+    this.ref = ref;
     this.change = new EventEmitter();
   }
 
-  modelUp() {
-    ++model;
-  }
-
-  modelDown() {
-    --model;
-  }
-
   ngOnInit() {
-    let changes = Observable.merge(
-      this.up.click,
-      this.down.click
-    ).debounce(500);
+    let up = this.ref.nativeElement.querySelector('.up'),
+        down = this.ref.nativeElement.querySelector('.down');
 
-    changes.subscribe(
-      () => this.change.emit(model),
-      (err) => console.log(err),
-      () => console.log('changes', model)
-    );
+    const upStream = Observable.fromEvent(up, 'click')
+      .map(() => ++this.model)
+      .debounceTime(500)
+      .distinctUntilChanged();
+
+    const downStream = Observable.fromEvent(down, 'click')
+      .map(() => --this.model)
+      .debounceTime(500)
+      .distinctUntilChanged();
+
+    upStream.subscribe(val => this.change.emit(val));
+    downStream.subscribe(val => this.change.emit(val));
   }
 }
 
@@ -82,8 +81,8 @@ class Stat {
     <div class='munchkin'>
       <div class='name'>{{munchkin.name}}</div>
       <div class='stats'>
-        <stat [model]='munchkin.level' [label]='Level' (change)='munchkin.level = $event; save()'></stat>
-        <stat [model]='munchkin.gear'  [label]='Gear' (change)='munchkin.gear = $event; save()'></stat>
+        <stat [model]='munchkin.level' label='Level' (change)='munchkin.level = $event; save()'></stat>
+        <stat [model]='munchkin.gear'  label='Gear' (change)='munchkin.gear = $event; save()'></stat>
       </div>
       <label>
         Warrior
