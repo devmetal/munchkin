@@ -70,8 +70,6 @@ export class MunchkinService {
       name: 'munchkin'
     });
 
-    console.log(munchkin);
-
     try {
       var result = await this.db.post(munchkin);
     } catch(err) {
@@ -91,6 +89,7 @@ export class MunchkinService {
   }
 
   async updateMunchkin(munchkin) {
+
     let result = await this.db.put(munchkin);
     if (!result.ok || result.ok === false) {
       return this.munchkinsObserver.onError('update fail');
