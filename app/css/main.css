@@ -3,4 +3,19 @@ body {
   padding: 0; }
 
 #munchkins {
-  display: flex; }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around; }
+  #munchkins .munchkin {
+    box-sizing: border-box;
+    margin: 5px; }
+    #munchkins .munchkin .name {
+      text-align: center; }
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around; }
+  .stats .stat {
+    box-sizing: border-box;
+    text-align: center; }

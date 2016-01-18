@@ -12,7 +12,7 @@ export class Munchkin {
     this.name = datas.name || "";
     this.level = datas.level || 0;
     this.gear = datas.gear || 0;
-    this.isWarior = datas.warior || false;
+    this.isWarior = datas.isWarior || false;
     this._id = datas._id || datas.id || "";
     this._rev = datas._rev ||  datas.rev || "";
   }

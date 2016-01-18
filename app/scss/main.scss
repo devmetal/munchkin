@@ -1,3 +1,7 @@
+@mixin border-box() {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -5,4 +9,26 @@ body {
 
 #munchkins {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+
+  .munchkin {
+    @include border-box();
+    margin: 5px;
+
+    .name {
+      text-align: center;
+    }
+  }
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+
+  .stat {
+    @include border-box();
+    text-align: center;
+  }
 }

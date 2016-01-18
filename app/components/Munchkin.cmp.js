@@ -2,18 +2,15 @@
 
 import {
   Component,
-  Input,
-  Output,
-  EventEmitter,
-  Attribute,
-  ElementRef
+  Input
 } from 'angular2/core';
 
 import {
   FORM_DIRECTIVES,
   NgSwitch,
   NgSwitchWhen,
-  NgSwitchDefault
+  NgSwitchDefault,
+  NgIf
 } from 'angular2/common';
 
 import {
@@ -25,64 +22,26 @@ import {
 } from '../services/Munchkin.srv';
 
 import {
-  Observable
-} from 'rxjs';
+  Stat
+} from './Stat.cmp';
+
+import {
+  Monster
+} from './Monster.cmp';
+
 
 @Component({
-  directives: [],
-  selector: 'stat',
-  template: `
-    <div class='stat'>
-      <div>{{label}}</div>
-      <div class='up'>UP</div>
-      <div>{{model}}</div>
-      <div class='down'>DOWN</div>
-    </div>
-  `
-})
-class Stat {
-  @Input()
-  model;
-
-  @Input()
-  label;
-
-  @Output()
-  change;
-
-  constructor(ref: ElementRef) {
-    this.ref = ref;
-    this.change = new EventEmitter();
-  }
-
-  ngOnInit() {
-    let up = this.ref.nativeElement.querySelector('.up'),
-        down = this.ref.nativeElement.querySelector('.down');
-
-    const upStream = Observable.fromEvent(up, 'click')
-      .map(() => ++this.model)
-      .debounceTime(500)
-      .distinctUntilChanged();
-
-    const downStream = Observable.fromEvent(down, 'click')
-      .map(() => --this.model)
-      .debounceTime(500)
-      .distinctUntilChanged();
-
-    upStream.subscribe(val => this.change.emit(val));
-    downStream.subscribe(val => this.change.emit(val));
-  }
-}
-
-@Component({
-  directives: [FORM_DIRECTIVES, Stat, NgSwitch, NgSwitchWhen, NgSwitchDefault],
+  directives: [FORM_DIRECTIVES, Stat, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgIf, Monster],
   selector: 'munchkin',
   template:`
     <div class='munchkin'>
-      <div class='name'>{{munchkin.name}}</div>
+      <div class='name' (click)='editName()' [ngSwitch]='editing'>
+        <span  *ngSwitchWhen='false'>{{munchkin.name}}</span>
+        <input *ngSwitchWhen='true' type='text' [value]='munchkin.name' (keyup.enter)='updateName(box.value)' #box>
+      </div>
       <div class='stats'>
-        <stat [model]='munchkin.level' label='Level' (change)='munchkin.level = $event; save()'></stat>
-        <stat [model]='munchkin.gear'  label='Gear' (change)='munchkin.gear = $event; save()'></stat>
+        <stat [model]='munchkin.level' isDebounced='true' label='Level' (modelChange)='munchkin.level = $event; save()'></stat>
+        <stat [model]='munchkin.gear'  isDebounced='true' label='Gear'  (modelChange)='munchkin.gear  = $event; save()'></stat>
       </div>
       <label>
         Warrior
@@ -98,6 +57,9 @@ class Stat {
         <span *ngSwitchWhen='false'>Help</span>
         <span *ngSwitchWhen='true'>End Help</span>
       </button>
+      <div *ngIf='isFighting'>
+        <monster [fighter]='munchkin'></monster>
+      </div>
     </div>
   `
 })
@@ -109,6 +71,7 @@ export class MunchkinComponent {
     this.db = db;
     this.isFighting = false;
     this.isHelping = false;
+    this.editing = false;
   }
 
   toggleFight() {
@@ -121,12 +84,22 @@ export class MunchkinComponent {
     this.isFighting = false;
   }
 
+  editName() {
+    this.editing = true;
+  }
+
+  updateName(value) {
+    this.munchkin.name = value;
+    this.editing = false;
+    this.save();
+  }
+
   async save() {
+    console.log('save');
     try {
       await this.db.updateMunchkin(this.munchkin);
     } catch(err) {
       console.log(err);
-      //Pass the error handler service
     }
   }
 }
