@@ -10,7 +10,8 @@ import {
   NgSwitch,
   NgSwitchWhen,
   NgSwitchDefault,
-  NgIf
+  NgIf,
+  NgFor
 } from 'angular2/common';
 
 import {
@@ -26,12 +27,12 @@ import {
 } from './Stat.cmp';
 
 import {
-  Monster
-} from './Monster.cmp';
+  Fight
+} from './Fight.cmp';
 
 
 @Component({
-  directives: [FORM_DIRECTIVES, Stat, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgIf, Monster],
+  directives: [FORM_DIRECTIVES, Stat, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgIf, NgFor, Fight],
   selector: 'munchkin',
   template:`
     <div class='munchkin'>
@@ -58,7 +59,7 @@ import {
         <span *ngSwitchWhen='true'>End Help</span>
       </button>
       <div *ngIf='isFighting'>
-        <monster [fighter]='munchkin'></monster>
+        <fight [fighter]='munchkin'></fight>
       </div>
     </div>
   `

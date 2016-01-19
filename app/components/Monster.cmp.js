@@ -21,9 +21,9 @@ import {
   template:`
     <div class='monster'>
       <div class='stats'>
-        <stat [(model)]='level' label='Monsta'></stat>
-        <stat [(model)]='fighterBonus' label='Fighter bonus'></stat>
-        <stat [(model)]='monsterBonus' label='Monster bonus'></stat>
+        <stat [(model)]='monster.level' label='Monsta'></stat>
+        <stat [(model)]='fighter.bonus'  label='Fighter bonus'></stat>
+        <stat [(model)]='monster.bonus' label='Monster bonus'></stat>
       </div>
       <div [ngSwitch]='sucks()'>
         <div *ngSwitchWhen='true'>Sucks dude!!</div>
@@ -36,10 +36,11 @@ export class Monster {
   @Input()
   fighter;
 
+  @Input()
+  monster;
+
   constructor() {
-    this.level = 0;
     this.fighterBonus = 0;
-    this.monsterBonus = 0;
   }
 
   sucks() {
@@ -52,10 +53,10 @@ export class Monster {
   }
 
   get fighterStrength() {
-    return this.fighter.level + this.fighter.gear + this.fighterBonus;
+    return this.fighter.level + this.fighter.gear + this.fighter.bonus;
   }
 
   get monstaStrength() {
-    return this.level + this.monsterBonus;
+    return this.monster.level + this.monster.bonus;
   }
 }
