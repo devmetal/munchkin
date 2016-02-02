@@ -30,16 +30,17 @@ import {
   Fight
 } from './Fight.cmp';
 
+import {
+  EditOnClick
+} from './EditOnClick.cmp';
+
 
 @Component({
-  directives: [FORM_DIRECTIVES, Stat, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgIf, NgFor, Fight],
+  directives: [FORM_DIRECTIVES, Stat, NgSwitch, NgSwitchWhen, NgSwitchDefault, NgIf, NgFor, Fight, EditOnClick],
   selector: 'munchkin',
   template:`
     <div class='munchkin'>
-      <div class='name' (click)='editName()' [ngSwitch]='editing'>
-        <span  *ngSwitchWhen='false'>{{munchkin.name}}</span>
-        <input *ngSwitchWhen='true' type='text' [value]='munchkin.name' (keyup.enter)='updateName(box.value)' #box>
-      </div>
+      <editOnClick [model]='munchkin.name' (modelChange)='updateName($event)'></editOnClick>
       <div class='stats'>
         <stat [model]='munchkin.level' isDebounced='true' label='Level' (modelChange)='munchkin.level = $event; save()'></stat>
         <stat [model]='munchkin.gear'  isDebounced='true' label='Gear'  (modelChange)='munchkin.gear  = $event; save()'></stat>
@@ -72,7 +73,6 @@ export class MunchkinComponent {
     this.db = db;
     this.isFighting = false;
     this.isHelping = false;
-    this.editing = false;
   }
 
   toggleFight() {
@@ -85,18 +85,12 @@ export class MunchkinComponent {
     this.isFighting = false;
   }
 
-  editName() {
-    this.editing = true;
-  }
-
   updateName(value) {
     this.munchkin.name = value;
-    this.editing = false;
     this.save();
   }
 
   async save() {
-    console.log('save');
     try {
       await this.db.updateMunchkin(this.munchkin);
     } catch(err) {
